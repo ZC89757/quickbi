@@ -1,0 +1,72 @@
+server:
+  port: 8990
+  servlet:
+    context-path: /
+spring:
+  application:
+    name: gateway-server
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            #是否允许cookie跨域  true允许
+            allowCredentials: true
+            #允许跨域的url * 则允许全部
+            allowedOrigins: '*'
+            # 允许跨域的方法 * 则全部
+            allowedMethods: '*'
+            # 跨域预检时间
+            maxAge: 180
+      discovery:
+        locator:
+          enabled: true   #开启Eureka服务发现
+          lower-case-service-id: true
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user/**
+        - id: AI-service
+          uri: lb://AI-service
+          predicates:
+              - Path=/ai/**
+        - id: chart-service
+          uri: lb://chart-service
+          predicates:
+              - Path=/chart/**
+  data:
+    web:
+      pageable:
+        qualifier-delimiter:
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8764/eureka/,http://localhost:8761/eureka/ #Eureka Server地址
+  instance:
+    prefer-ip-address: true
+
+knife4j:
+  # 聚合swagger文档
+
+  gateway:
+    enabled: true
+    routes:
+      - name: 用户服务
+        # 真实子服务访问url地址-提供OpenAPI的文档
+        url: /user-service/v3/api-docs?group=default
+        service-name: user-service
+        order: 2
+      - name: ai服务
+        url: /ai-service/v3/api-docs?group=default
+        service-name: ai-service
+        # 路由前缀
+        context-path: /
+        order: 3
+      - name: 图表服务
+        url: /chart-service/v3/api-docs?group=default
+        service-name: chart-service
+        # 路由前缀
+        context-path: /
+        order: 3
+

@@ -1,0 +1,32 @@
+{
+  "groups": [
+    {
+      "name": "spring.redis",
+      "type": "com.zccc.config.RedissonConfig",
+      "sourceType": "com.zccc.config.RedissonConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.redis.database",
+      "type": "java.lang.Integer",
+      "sourceType": "com.zccc.config.RedissonConfig"
+    },
+    {
+      "name": "spring.redis.host",
+      "type": "java.lang.String",
+      "sourceType": "com.zccc.config.RedissonConfig"
+    },
+    {
+      "name": "spring.redis.password",
+      "type": "java.lang.String",
+      "sourceType": "com.zccc.config.RedissonConfig"
+    },
+    {
+      "name": "spring.redis.port",
+      "type": "java.lang.Integer",
+      "sourceType": "com.zccc.config.RedissonConfig"
+    }
+  ],
+  "hints": []
+}
