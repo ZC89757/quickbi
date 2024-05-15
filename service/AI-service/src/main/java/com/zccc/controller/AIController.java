@@ -2,7 +2,7 @@ package com.zccc.controller;
 
 import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.zccc.bizmq.BiMessageProducer;
+import com.zccc.bizmq.AIMessageProducer;
 import com.zccc.service.ChartService;
 import com.zccc.service.UserService;
 import constant.CommonConstant;
@@ -57,7 +57,7 @@ public class AIController {
     private ThreadPoolExecutor threadPoolExecutor;
 
     @Resource
-    private BiMessageProducer biMessageProducer;
+    private AIMessageProducer biMessageProducer;
 
     @Resource
     private ChartService chartService;

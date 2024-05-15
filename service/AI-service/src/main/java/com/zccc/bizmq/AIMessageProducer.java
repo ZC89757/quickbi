@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 
 @Component
-public class BiMessageProducer {
+public class AIMessageProducer {
 
     @Resource
     private RabbitTemplate rabbitTemplate;
@@ -16,7 +16,7 @@ public class BiMessageProducer {
      * @param message
      */
     public void sendMessage(String message) {
-        rabbitTemplate.convertAndSend(BiMqConstant.BI_EXCHANGE_NAME, BiMqConstant.BI_ROUTING_KEY, message);
+        rabbitTemplate.convertAndSend(AIMqConstant.BI_EXCHANGE_NAME, AIMqConstant.BI_ROUTING_KEY, message);
     }
 
 }
