@@ -1,7 +1,7 @@
 package com.zccc.manager;
 
-import common.ErrorCode;
-import exception.BusinessException;
+import com.zccc.common.ErrorCode;
+import com.zccc.exception.BusinessException;
 import org.redisson.api.RRateLimiter;
 import org.redisson.api.RateIntervalUnit;
 import org.redisson.api.RateType;

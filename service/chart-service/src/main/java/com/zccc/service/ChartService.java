@@ -2,7 +2,7 @@ package com.zccc.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import model.entity.Chart;
+import com.zccc.model.entity.Chart;
 
 /**
  *

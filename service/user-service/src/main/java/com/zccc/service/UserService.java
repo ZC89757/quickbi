@@ -2,10 +2,10 @@ package com.zccc.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
-import model.dto.user.UserQueryRequest;
-import model.entity.User;
-import model.vo.LoginUserVO;
-import model.vo.UserVO;
+import com.zccc.model.dto.user.UserQueryRequest;
+import com.zccc.model.entity.User;
+import com.zccc.model.vo.LoginUserVO;
+import com.zccc.model.vo.UserVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

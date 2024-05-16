@@ -7,6 +7,7 @@ spring:
     name: gateway-server
   cloud:
     gateway:
+
       globalcors:
         cors-configurations:
           '[/**]':
@@ -18,6 +19,7 @@ spring:
             allowedMethods: '*'
             # 跨域预检时间
             maxAge: 180
+
       discovery:
         locator:
           enabled: true   #开启Eureka服务发现
@@ -26,15 +28,25 @@ spring:
         - id: user-service
           uri: lb://user-service
           predicates:
-            - Path=/user/**
-        - id: AI-service
-          uri: lb://AI-service
+            - Path=/api/user/**
+          filters:
+            - StripPrefix=1
+        - id: ai-service
+          uri: lb://ai-service
           predicates:
-              - Path=/ai/**
+              - Path=/api/ai/**
+          filters:
+            - StripPrefix=1
         - id: chart-service
           uri: lb://chart-service
           predicates:
-              - Path=/chart/**
+              - Path=/api/chart/**
+          filters:
+            - StripPrefix=1
+  data:
+    web:
+      pageable:
+        qualifier-delimiter:
 eureka:
   client:
     service-url:
@@ -50,18 +62,19 @@ knife4j:
     routes:
       - name: 用户服务
         # 真实子服务访问url地址-提供OpenAPI的文档
-        url: /user-service/v3/api-docs?group=default
+        url: /user-service/v2/api-docs?group=default
         service-name: user-service
-        order: 2
+        order: 1
       - name: ai服务
-        url: /ai-service/v3/api-docs?group=default
+        url: /ai-service/v2/api-docs?group=default
         service-name: ai-service
         # 路由前缀
         context-path: /
-        order: 3
+        order: 2
       - name: 图表服务
-        url: /chart-service/v3/api-docs?group=default
+        url: /chart-service/v2/api-docs?group=default
         service-name: chart-service
         # 路由前缀
         context-path: /
         order: 3
+

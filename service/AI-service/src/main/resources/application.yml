@@ -1,24 +1,24 @@
 spring:
   application:
-    name: AI-service
+    name: ai-service
   # 默认 dev 环境
   profiles:
     active: dev
-#  # 支持 swagger3
+##  # 支持 swagger3
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
   # session 配置
   session:
     # todo 取消注释开启分布式 session（须先配置 Redis）
-    # store-type: redis
+    store-type: redis
     # 30 天过期
     timeout: 2592000
   # 数据库配置
   # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/yubi
+    url: jdbc:mysql://localhost:3306/yubi?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
     username: root
     password: zc
   # Redis 配置
@@ -64,11 +64,11 @@ mybatis-plus:
       logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
 yuapi:
   client:
-    access-key: arckd61mvnl5kx6irm4hoaqofmqplylb
-    secret-key: jvnq5y257mlamb4l7piq5hri5l5iz6i9
+    access-key: yixw9o5lia9viw0axa78w5ypi4evk4nd
+    secret-key: h2dfo639ne8w0frrv3upvoweroa79ehu
 eureka:
   instance:
-    hostname: AI-server
+    hostname: ai-service
     prefer-ip-address: true
     instance-id: ${spring.cloud.client.ip-address}:${server.port}
   client:

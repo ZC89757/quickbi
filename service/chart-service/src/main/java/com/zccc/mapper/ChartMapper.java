@@ -2,7 +2,7 @@ package com.zccc.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import model.entity.Chart;
+import com.zccc.model.entity.Chart;
 
 import java.util.List;
 import java.util.Map;

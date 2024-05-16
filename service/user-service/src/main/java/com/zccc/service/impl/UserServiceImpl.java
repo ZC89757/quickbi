@@ -7,27 +7,28 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.zccc.mapper.UserMapper;
 import com.zccc.service.UserService;
-import common.ErrorCode;
-import constant.CommonConstant;
-import exception.BusinessException;
+import com.zccc.common.ErrorCode;
+import com.zccc.constant.CommonConstant;
+import com.zccc.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
-import model.dto.user.UserQueryRequest;
-import model.entity.User;
-import model.enums.UserRoleEnum;
-import model.vo.LoginUserVO;
-import model.vo.UserVO;
+import com.zccc.model.dto.user.UserQueryRequest;
+import com.zccc.model.entity.User;
+import com.zccc.model.enums.UserRoleEnum;
+import com.zccc.model.vo.LoginUserVO;
+import com.zccc.model.vo.UserVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-import utils.SqlUtils;
+import com.zccc.utils.SqlUtils;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static constant.UserConstant.USER_LOGIN_STATE;
+import static com.zccc.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * 用户服务实现
@@ -42,6 +43,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 盐值，混淆密码
      */
     private static final String SALT = "zccc";
+    @Resource
+    private UserMapper userMapper;
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
@@ -63,7 +66,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             // 账户不能重复
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("userAccount", userAccount);
-            long count = this.baseMapper.selectCount(queryWrapper);
+            long count = userMapper.selectCount(queryWrapper);
+            System.out.println(count);
             if (count > 0) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
             }

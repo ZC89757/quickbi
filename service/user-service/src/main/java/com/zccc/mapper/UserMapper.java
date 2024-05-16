@@ -2,7 +2,7 @@ package com.zccc.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import model.entity.User;
+import com.zccc.model.entity.User;
 
 /**
  * @Entity com.zccc.springbootinit.model.entity.User

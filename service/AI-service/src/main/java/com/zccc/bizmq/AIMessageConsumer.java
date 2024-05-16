@@ -2,15 +2,15 @@ package com.zccc.bizmq;
 
 import com.rabbitmq.client.Channel;
 import com.zccc.service.ChartService;
-import common.BaseResponse;
-import common.ErrorCode;
-import constant.CommonConstant;
-import exception.BusinessException;
+import com.zccc.common.BaseResponse;
+import com.zccc.common.ErrorCode;
+import com.zccc.constant.CommonConstant;
+import com.zccc.exception.BusinessException;
 import com.zccc.manager.AiManager;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import model.entity.Chart;
+import com.zccc.model.entity.Chart;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
@@ -54,7 +54,7 @@ public class AIMessageConsumer {
         Chart updateChart = new Chart();
         updateChart.setId(chart.getId());
         updateChart.setStatus("running");
-        boolean b = chartService.updateById(updateChart);
+        boolean b = chartService.innerUpdate(updateChart);
         if (!b) {
             channel.basicNack(deliveryTag, false, false);
             handleChartUpdateError(chart.getId(), "更新图表执行中状态失败");
@@ -77,7 +77,7 @@ public class AIMessageConsumer {
         // todo 建议定义状态为枚举值
         updateChartResult.setStatus("succeed");
 
-        boolean updateResult = chartService.updateById(updateChartResult);
+        boolean updateResult = chartService.innerUpdate(updateChartResult);
         if (!updateResult) {
             channel.basicNack(deliveryTag, false, false);
             handleChartUpdateError(chart.getId(), "更新图表成功状态失败");
@@ -116,7 +116,7 @@ public class AIMessageConsumer {
         updateChartResult.setId(chartId);
         updateChartResult.setStatus("failed");
         updateChartResult.setExecMessage("execMessage");
-        boolean updateResult = chartService.updateById(updateChartResult);
+        boolean updateResult = chartService.innerUpdate(updateChartResult);
         if (!updateResult) {
             log.error("更新图表失败状态失败" + chartId + "," + execMessage);
         }

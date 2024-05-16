@@ -5,26 +5,26 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zccc.annotation.AuthCheck;
 import com.zccc.service.ChartService;
 import com.zccc.service.UserService;
-import common.BaseResponse;
-import common.DeleteRequest;
-import common.ErrorCode;
-import common.ResultUtils;
-import constant.CommonConstant;
-import constant.UserConstant;
-import exception.BusinessException;
-import exception.ThrowUtils;
+import com.zccc.common.BaseResponse;
+import com.zccc.common.DeleteRequest;
+import com.zccc.common.ErrorCode;
+import com.zccc.common.ResultUtils;
+import com.zccc.constant.CommonConstant;
+import com.zccc.constant.UserConstant;
+import com.zccc.exception.BusinessException;
+import com.zccc.exception.ThrowUtils;
 import lombok.extern.slf4j.Slf4j;
-import model.dto.chart.ChartAddRequest;
-import model.dto.chart.ChartEditRequest;
-import model.dto.chart.ChartQueryRequest;
-import model.dto.chart.ChartUpdateRequest;
-import model.entity.Chart;
-import model.entity.User;
+import com.zccc.model.dto.chart.ChartAddRequest;
+import com.zccc.model.dto.chart.ChartEditRequest;
+import com.zccc.model.dto.chart.ChartQueryRequest;
+import com.zccc.model.dto.chart.ChartUpdateRequest;
+import com.zccc.model.entity.Chart;
+import com.zccc.model.entity.User;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
-import utils.SqlUtils;
+import com.zccc.utils.SqlUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -252,15 +252,20 @@ public class ChartController {
         return queryWrapper;
     }
 
-    @RequestMapping("/save")
+    @PostMapping("/save")
+    public Long innerSave(@RequestBody Chart chart){
+        System.out.println(chart);
+        if(chartService.save(chart)){
+            return chart.getId();
+        }else{
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"图表保存失败");
+        }
 
-    public boolean innerSave(Chart chart){
-        return chartService.save(chart);
     }
 
-    @RequestMapping("/update")
-
-    public boolean innerUpdate(Chart chart){
+    @PostMapping("/innerUpdate")
+    public boolean innerUpdate(@RequestBody Chart chart){
+        System.out.println(chart);
         return chartService.updateById(chart);
     }
 }

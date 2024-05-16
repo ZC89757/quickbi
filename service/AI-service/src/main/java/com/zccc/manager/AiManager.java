@@ -1,7 +1,7 @@
 package com.zccc.manager;
 
-import common.ErrorCode;
-import exception.BusinessException;
+import com.zccc.common.ErrorCode;
+import com.zccc.exception.BusinessException;
 import com.yupi.yucongming.dev.client.YuCongMingClient;
 import com.yupi.yucongming.dev.common.BaseResponse;
 import com.yupi.yucongming.dev.model.DevChatRequest;

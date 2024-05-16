@@ -15,9 +15,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
  */
 // todo 如需开启 Redis，须移除 exclude 中的内容
-@SpringBootApplication(exclude = {RedisAutoConfiguration.class})
+@SpringBootApplication
 @MapperScan("com.zccc.mapper")
-@ComponentScan(basePackages = {"com.zccc","config"})
 @EnableEurekaClient
 @EnableFeignClients
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)

@@ -2,21 +2,21 @@ package com.zccc.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zccc.annotation.AuthCheck;
+import com.zccc.model.dto.user.*;
 import com.zccc.service.UserService;
 
 
-import common.BaseResponse;
-import common.DeleteRequest;
-import common.ErrorCode;
-import common.ResultUtils;
-import constant.UserConstant;
-import exception.BusinessException;
-import exception.ThrowUtils;
+import com.zccc.common.BaseResponse;
+import com.zccc.common.DeleteRequest;
+import com.zccc.common.ErrorCode;
+import com.zccc.common.ResultUtils;
+import com.zccc.constant.UserConstant;
+import com.zccc.exception.BusinessException;
+import com.zccc.exception.ThrowUtils;
 import lombok.extern.slf4j.Slf4j;
-import model.dto.user.*;
-import model.entity.User;
-import model.vo.LoginUserVO;
-import model.vo.UserVO;
+import com.zccc.model.entity.User;
+import com.zccc.model.vo.LoginUserVO;
+import com.zccc.model.vo.UserVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
