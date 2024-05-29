@@ -19,4 +19,6 @@ public class AIMessageProducer {
         rabbitTemplate.convertAndSend(AIMqConstant.BI_EXCHANGE_NAME, AIMqConstant.BI_ROUTING_KEY, message);
     }
 
+
+
 }

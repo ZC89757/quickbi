@@ -37,6 +37,7 @@ public class AIMessageConsumer {
     @RabbitListener(queues = {AIMqConstant.BI_QUEUE_NAME}, ackMode = "MANUAL")
     public void receiveMessage(String message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
         log.info("receiveMessage message = {}", message);
+//        channel.basicAck(deliveryTag, false);
         if (StringUtils.isBlank(message)) {
             // 如果失败，消息拒绝
             channel.basicNack(deliveryTag, false, false);
@@ -103,7 +104,7 @@ public class AIMessageConsumer {
         // 拼接分析目标
         String userGoal = goal;
         if (StringUtils.isNotBlank(chartType)) {
-            userGoal += "，请使用" + chartType;
+            userGoal += "，请使用" + chartType+"不要有单引号出现";
         }
         userInput.append(userGoal).append("\n");
         userInput.append("原始数据：").append("\n");

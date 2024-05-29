@@ -6,7 +6,6 @@ import com.alibaba.excel.support.ExcelTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -61,9 +60,5 @@ public class ExcelUtils {
             stringBuilder.append(StringUtils.join(dataList, ",")).append("\n");
         }
         return stringBuilder.toString();
-    }
-
-    public static void main(String[] args) {
-        excelToCsv(null);
     }
 }
