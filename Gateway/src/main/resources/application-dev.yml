@@ -7,7 +7,6 @@ spring:
     name: gateway-server
   cloud:
     gateway:
-
       globalcors:
         cors-configurations:
           '[/**]':
@@ -47,12 +46,6 @@ spring:
     web:
       pageable:
         qualifier-delimiter:
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8764/eureka/,http://localhost:8761/eureka/ #Eureka Server地址
-  instance:
-    prefer-ip-address: true
 
 knife4j:
   # 聚合swagger文档

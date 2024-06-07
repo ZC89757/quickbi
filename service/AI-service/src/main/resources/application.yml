@@ -25,22 +25,16 @@ spring:
   # todo 需替换配置，然后取消注释
   redis:
     database: 1
-    host: localhost
+    host: 1.92.81.128
     port: 6379
     timeout: 5000
-  # Elasticsearch 配置
-  # todo 需替换配置，然后取消注释
-#  elasticsearch:
-#    uris: http://localhost:9200
-#    username: root
-#    password: 123456
   # 文件上传
   servlet:
     multipart:
       # 大小限制
       max-file-size: 10MB
   rabbitmq:
-    host: 192.168.92.250
+    host: 1.92.81.128
     port: 5672
     password: guest
     username: guest
@@ -66,11 +60,15 @@ yuapi:
   client:
     access-key: yixw9o5lia9viw0axa78w5ypi4evk4nd
     secret-key: h2dfo639ne8w0frrv3upvoweroa79ehu
-eureka:
-  instance:
-    hostname: ai-service
-    prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ip-address}:${server.port}
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/,http://localhost:8764/eureka/
+dubbo:
+  application:
+    name: ${spring.application.name}
+  registry:
+    address: zookeeper://1.92.81.128:2181
+    timeout: 22000
+  protocol:
+    name: dubbo
+    port: 20895
+    id: dubbo
+  scan:
+    base-packages: com.zccc.service

@@ -1,6 +1,0 @@
-com\zccc\UserApplication.class
-com\zccc\annotation\AuthCheck.class
-com\zccc\service\UserService.class
-com\zccc\mapper\UserMapper.class
-com\zccc\service\impl\UserServiceImpl.class
-com\zccc\controller\UserController.class

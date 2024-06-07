@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.zccc.mapper.UserMapper;
-import com.zccc.service.UserService;
 import com.zccc.common.ErrorCode;
 import com.zccc.constant.CommonConstant;
 import com.zccc.exception.BusinessException;
+import com.zccc.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import com.zccc.model.dto.user.UserQueryRequest;
 import com.zccc.model.entity.User;
@@ -17,6 +17,7 @@ import com.zccc.model.enums.UserRoleEnum;
 import com.zccc.model.vo.LoginUserVO;
 import com.zccc.model.vo.UserVO;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.redisson.Redisson;
 import org.redisson.api.RLock;
 import org.springframework.beans.BeanUtils;
@@ -40,6 +41,7 @@ import static com.zccc.constant.UserConstant.USER_LOGIN_STATE;
  */
 @Service
 @Slf4j
+@DubboService
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     /**
@@ -48,7 +50,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private static final String SALT = "zccc";
     @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private Redisson redisson;
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {

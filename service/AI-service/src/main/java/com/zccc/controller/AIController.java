@@ -6,13 +6,13 @@ import com.zccc.bizmq.AIMessageProducer;
 import com.zccc.model.dto.chart.ChartQueryRequest;
 import com.zccc.model.dto.chart.GenChartByAiRequest;
 import com.zccc.service.ChartService;
-import com.zccc.service.UserService;
 import com.zccc.constant.CommonConstant;
 import com.zccc.exception.BusinessException;
 import com.zccc.exception.ThrowUtils;
 import com.zccc.manager.AiManager;
 import com.zccc.manager.RedisLimiterManager;
 
+import com.zccc.service.UserService;
 import com.zccc.utils.ExcelUtils;
 import com.zccc.utils.SqlUtils;
 import com.zccc.common.BaseResponse;
@@ -24,6 +24,7 @@ import com.zccc.model.entity.User;
 import com.zccc.model.vo.BiResponse;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,7 +46,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class AIController {
 
 
-    @Resource
+    @DubboReference
     private UserService userService;
 
     @Resource
@@ -60,7 +61,7 @@ public class AIController {
     @Resource
     private AIMessageProducer biMessageProducer;
 
-    @Resource
+    @DubboReference(check = false)
     private ChartService chartService;
 
 
@@ -151,7 +152,7 @@ public class AIController {
         chart.setUserId(loginUser.getId());
         chart.setStatus("succeed");
 //        TODO 这里调用chart的微服务
-        Long saveResult = chartService.innerSave(chart);
+        Long saveResult = chartService.save(chart);
         ThrowUtils.throwIf(saveResult==null, ErrorCode.SYSTEM_ERROR, "图表保存失败");
 
         BiResponse biResponse = new BiResponse();
@@ -205,7 +206,7 @@ public class AIController {
         chart.setChartType(chartType);
         chart.setStatus("wait");
         chart.setUserId(loginUser.getId());
-        Long saveResult = chartService.innerSave(chart);
+        Long saveResult = chartService.save(chart);
         chart.setId(saveResult);
         ThrowUtils.throwIf(saveResult==null, ErrorCode.SYSTEM_ERROR, "图表保存失败");
         // todo 建议处理任务队列满了后，抛异常的情况
@@ -215,7 +216,7 @@ public class AIController {
             Chart updateChart = new Chart();
             updateChart.setId(chart.getId());
             updateChart.setStatus("running");
-            boolean b = chartService.innerUpdate(updateChart);
+            boolean b = chartService.updateById(updateChart);
             log.error("-------------------------"+b);
             if (!b) {
                 handleChartUpdateError(chart.getId(), "更新图表执行中状态失败");
@@ -235,7 +236,7 @@ public class AIController {
             updateChartResult.setGenChart(genChart);
             updateChartResult.setGenResult(genResult);
             updateChartResult.setStatus("succeed");
-            boolean updateResult = chartService.innerUpdate(updateChartResult);
+            boolean updateResult = chartService.updateById(updateChartResult);
             if (!updateResult) {
                 handleChartUpdateError(chart.getId(), "更新图表成功状态失败");
             }
@@ -321,7 +322,7 @@ public class AIController {
         chart.setChartType(chartType);
         chart.setStatus("wait");
         chart.setUserId(loginUser.getId());
-        Long saveResult = chartService.innerSave(chart);
+        Long saveResult = chartService.save(chart);
         ThrowUtils.throwIf(saveResult==null, ErrorCode.SYSTEM_ERROR, "图表保存失败");
         long newChartId = saveResult;
         biMessageProducer.sendMessage(String.valueOf(newChartId));
@@ -336,8 +337,7 @@ public class AIController {
         updateChartResult.setId(chartId);
         updateChartResult.setStatus("failed");
         updateChartResult.setExecMessage("execMessage");
-        boolean updateResult = chartService.innerUpdate(updateChartResult);
-        if (!updateResult) {
+        boolean updateResult = chartService.updateById(updateChartResult);        if (!updateResult) {
             log.error("更新图表失败状态失败" + chartId + "," + execMessage);
         }
     }

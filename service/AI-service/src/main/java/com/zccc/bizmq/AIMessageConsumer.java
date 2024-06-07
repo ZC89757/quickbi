@@ -12,6 +12,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import com.zccc.model.entity.Chart;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
@@ -26,7 +27,7 @@ import javax.annotation.Resource;
 @Slf4j
 public class AIMessageConsumer {
 
-    @Resource
+    @DubboReference
     private ChartService chartService;
 
     @Resource
@@ -45,8 +46,7 @@ public class AIMessageConsumer {
         }
         long chartId = Long.parseLong(message);
         //通过微服务调用获得
-        BaseResponse<Chart> res = chartService.getById(chartId);
-        Chart chart = res.getData();
+        Chart chart = chartService.getById(chartId);
         if (chart == null) {
             channel.basicNack(deliveryTag, false, false);
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "图表为空");
@@ -55,7 +55,7 @@ public class AIMessageConsumer {
         Chart updateChart = new Chart();
         updateChart.setId(chart.getId());
         updateChart.setStatus("running");
-        boolean b = chartService.innerUpdate(updateChart);
+        boolean b = chartService.updateById(updateChart);
         if (!b) {
             channel.basicNack(deliveryTag, false, false);
             handleChartUpdateError(chart.getId(), "更新图表执行中状态失败");
@@ -78,7 +78,7 @@ public class AIMessageConsumer {
         // todo 建议定义状态为枚举值
         updateChartResult.setStatus("succeed");
 
-        boolean updateResult = chartService.innerUpdate(updateChartResult);
+        boolean updateResult = chartService.updateById(updateChartResult);
         if (!updateResult) {
             channel.basicNack(deliveryTag, false, false);
             handleChartUpdateError(chart.getId(), "更新图表成功状态失败");
@@ -117,7 +117,7 @@ public class AIMessageConsumer {
         updateChartResult.setId(chartId);
         updateChartResult.setStatus("failed");
         updateChartResult.setExecMessage("execMessage");
-        boolean updateResult = chartService.innerUpdate(updateChartResult);
+        boolean updateResult = chartService.updateById(updateChartResult);
         if (!updateResult) {
             log.error("更新图表失败状态失败" + chartId + "," + execMessage);
         }

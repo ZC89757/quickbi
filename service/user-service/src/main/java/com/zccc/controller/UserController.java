@@ -3,7 +3,6 @@ package com.zccc.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zccc.annotation.AuthCheck;
 import com.zccc.model.dto.user.*;
-import com.zccc.service.UserService;
 
 
 import com.zccc.common.BaseResponse;
@@ -13,12 +12,14 @@ import com.zccc.common.ResultUtils;
 import com.zccc.constant.UserConstant;
 import com.zccc.exception.BusinessException;
 import com.zccc.exception.ThrowUtils;
+import com.zccc.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import com.zccc.model.entity.User;
 import com.zccc.model.vo.LoginUserVO;
 import com.zccc.model.vo.UserVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -110,18 +111,6 @@ public class UserController {
         User user = userService.getLoginUser(request);
         return ResultUtils.success(userService.getLoginUserVO(user));
     }
-
-    @GetMapping("/getLoginUser")
-    public User innerGetLoginUser(HttpServletRequest request) {
-        User user = userService.getLoginUser(request);
-        return user;
-    }
-    // endregion
-    @GetMapping("/isAdmin")
-    public boolean innerIsAdmin(HttpServletRequest request) {
-        return userService.isAdmin(request);
-    }
-    // region 增删改查
 
 
     /**

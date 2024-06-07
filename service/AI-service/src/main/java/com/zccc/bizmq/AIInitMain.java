@@ -12,7 +12,7 @@ public class AIInitMain {
     public static void main(String[] args) {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost("192.168.92.250");
+            factory.setHost("1.92.81.128");
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
             String EXCHANGE_NAME =  AIMqConstant.BI_EXCHANGE_NAME;

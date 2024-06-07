@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zccc.annotation.AuthCheck;
 import com.zccc.service.ChartService;
-import com.zccc.service.UserService;
 import com.zccc.common.BaseResponse;
 import com.zccc.common.DeleteRequest;
 import com.zccc.common.ErrorCode;
@@ -13,6 +12,7 @@ import com.zccc.constant.CommonConstant;
 import com.zccc.constant.UserConstant;
 import com.zccc.exception.BusinessException;
 import com.zccc.exception.ThrowUtils;
+import com.zccc.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import com.zccc.model.dto.chart.ChartAddRequest;
 import com.zccc.model.dto.chart.ChartEditRequest;
@@ -22,6 +22,7 @@ import com.zccc.model.entity.Chart;
 import com.zccc.model.entity.User;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import com.zccc.utils.SqlUtils;
@@ -42,12 +43,8 @@ public class ChartController {
     @Resource
     private ChartService chartService;
 
-    @Resource
+    @DubboReference
     private UserService userService;
-
-
-
-    // region 增删改查
 
     /**
      * 创建
@@ -252,20 +249,7 @@ public class ChartController {
         return queryWrapper;
     }
 
-    @PostMapping("/save")
-    public Long innerSave(@RequestBody Chart chart){
-        System.out.println(chart);
-        if(chartService.save(chart)){
-            return chart.getId();
-        }else{
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"图表保存失败");
-        }
 
-    }
 
-    @PostMapping("/innerUpdate")
-    public boolean innerUpdate(@RequestBody Chart chart){
-        System.out.println(chart);
-        return chartService.updateById(chart);
-    }
+
 }
