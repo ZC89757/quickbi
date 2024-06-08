@@ -30,6 +30,8 @@ import com.zccc.utils.SqlUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import static com.zccc.constant.UserConstant.USER_LOGIN_STATE;
+
 /**
  * 帖子接口
  *
@@ -60,7 +62,7 @@ public class ChartController {
         }
         Chart chart = new Chart();
         BeanUtils.copyProperties(chartAddRequest, chart);
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = getLoginUser(request);
         chart.setUserId(loginUser.getId());
         boolean result = chartService.save(chart);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
@@ -80,7 +82,7 @@ public class ChartController {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User user = userService.getLoginUser(request);
+        User user = getLoginUser(request);
         long id = deleteRequest.getId();
         // 判断是否存在
         Chart oldChart = chartService.getById(id);
@@ -165,7 +167,7 @@ public class ChartController {
         if (chartQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = getLoginUser(request);
         chartQueryRequest.setUserId(loginUser.getId());
         long current = chartQueryRequest.getCurrent();
         long size = chartQueryRequest.getPageSize();
@@ -176,7 +178,23 @@ public class ChartController {
         return ResultUtils.success(chartPage);
     }
 
-    // endregion
+
+    public User getLoginUser(HttpServletRequest request) {
+        // 先判断是否已登录
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User currentUser = (User) userObj;
+        if (currentUser == null || currentUser.getId() == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        // 从数据库查询（追求性能的话可以注释，直接走缓存）
+        //微服务调用
+        long userId = currentUser.getId();
+        currentUser = userService.getById(userId);
+        if (currentUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        return currentUser;
+    }
 
     /**
      * 编辑（用户）
@@ -192,7 +210,7 @@ public class ChartController {
         }
         Chart chart = new Chart();
         BeanUtils.copyProperties(chartEditRequest, chart);
-        User loginUser = userService.getLoginUser(request);
+        User loginUser =getLoginUser(request);
         long id = chartEditRequest.getId();
         // 判断是否存在
         Chart oldChart = chartService.getById(id);

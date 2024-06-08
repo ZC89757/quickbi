@@ -2,29 +2,26 @@ package com.zccc.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
-import com.zccc.mapper.UserMapper;
 import com.zccc.common.ErrorCode;
 import com.zccc.constant.CommonConstant;
 import com.zccc.exception.BusinessException;
-import com.zccc.service.UserService;
-import lombok.extern.slf4j.Slf4j;
+import com.zccc.mapper.UserMapper;
 import com.zccc.model.dto.user.UserQueryRequest;
 import com.zccc.model.entity.User;
 import com.zccc.model.enums.UserRoleEnum;
 import com.zccc.model.vo.LoginUserVO;
 import com.zccc.model.vo.UserVO;
+import com.zccc.service.UserService;
+import com.zccc.utils.SqlUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.redisson.Redisson;
 import org.redisson.api.RLock;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-import com.zccc.utils.SqlUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -128,10 +125,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return this.getLoginUserVO(user);
     }
 
+
+
     /**
      * 获取当前登录用户
      *
-     * @param request
+     * @param
      * @return
      */
     @Override
@@ -149,6 +148,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
         return currentUser;
+    }
+
+    @Override
+    public User getById(Long id){
+        return super.getById(id);
     }
 
     /**

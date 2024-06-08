@@ -45,6 +45,8 @@ public interface UserService extends IService<User> {
      */
     User getLoginUser(HttpServletRequest request);
 
+    User getById(Long id);
+
     /**
      * 获取当前登录用户（允许未登录）
      *

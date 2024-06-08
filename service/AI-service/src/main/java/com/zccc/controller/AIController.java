@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import static com.zccc.constant.UserConstant.USER_LOGIN_STATE;
+
 /**
  * 帖子接口
  *
@@ -94,7 +96,7 @@ public class AIController {
         final List<String> validFileSuffixList = Arrays.asList("xlsx");
         ThrowUtils.throwIf(!validFileSuffixList.contains(suffix), ErrorCode.PARAMS_ERROR, "文件后缀非法");
         //TODO 这里调用用户的微服务
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = getLoginUser(request);
         // 限流判断，每个用户一个限流器
         redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
         // 无需写 prompt，直接调用现有模型，https://www.yucongming.com，公众号搜【鱼聪明AI】
@@ -152,7 +154,7 @@ public class AIController {
         chart.setUserId(loginUser.getId());
         chart.setStatus("succeed");
 //        TODO 这里调用chart的微服务
-        Long saveResult = chartService.save(chart);
+        Long saveResult = chartService.save_chart(chart);
         ThrowUtils.throwIf(saveResult==null, ErrorCode.SYSTEM_ERROR, "图表保存失败");
 
         BiResponse biResponse = new BiResponse();
@@ -161,7 +163,22 @@ public class AIController {
         biResponse.setChartId(chart.getId());
         return ResultUtils.success(biResponse);
     }
-
+    public User getLoginUser(HttpServletRequest request) {
+        // 先判断是否已登录
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User currentUser = (User) userObj;
+        if (currentUser == null || currentUser.getId() == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        // 从数据库查询（追求性能的话可以注释，直接走缓存）
+        //微服务调用
+        long userId = currentUser.getId();
+        currentUser = userService.getById(userId);
+        if (currentUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        return currentUser;
+    }
     /**
      * 智能分析（异步）
      *
@@ -185,7 +202,7 @@ public class AIController {
         String suffix = FileUtil.getSuffix(originalFilename);
         final List<String> validFileSuffixList = Arrays.asList("xlsx", "xls");
         ThrowUtils.throwIf(!validFileSuffixList.contains(suffix), ErrorCode.PARAMS_ERROR, "文件后缀非法");
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = getLoginUser(request);
         redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
         long biModelId = 1659171950288818178L;
         StringBuilder userInput = new StringBuilder();
@@ -206,7 +223,7 @@ public class AIController {
         chart.setChartType(chartType);
         chart.setStatus("wait");
         chart.setUserId(loginUser.getId());
-        Long saveResult = chartService.save(chart);
+        Long saveResult = chartService.save_chart(chart);
         chart.setId(saveResult);
         ThrowUtils.throwIf(saveResult==null, ErrorCode.SYSTEM_ERROR, "图表保存失败");
         // todo 建议处理任务队列满了后，抛异常的情况
@@ -276,7 +293,7 @@ public class AIController {
         final List<String> validFileSuffixList = Arrays.asList("xlsx", "xls");
         ThrowUtils.throwIf(!validFileSuffixList.contains(suffix), ErrorCode.PARAMS_ERROR, "文件后缀非法");
 
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = getLoginUser(request);
         // 限流判断，每个用户一个限流器
         redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
         // 无需写 prompt，直接调用现有模型，https://www.yucongming.com，公众号搜【鱼聪明AI】
@@ -322,7 +339,7 @@ public class AIController {
         chart.setChartType(chartType);
         chart.setStatus("wait");
         chart.setUserId(loginUser.getId());
-        Long saveResult = chartService.save(chart);
+        Long saveResult = chartService.save_chart(chart);
         ThrowUtils.throwIf(saveResult==null, ErrorCode.SYSTEM_ERROR, "图表保存失败");
         long newChartId = saveResult;
         biMessageProducer.sendMessage(String.valueOf(newChartId));

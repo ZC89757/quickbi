@@ -18,6 +18,8 @@ public class AiManager {
 
     @Resource
     private YuCongMingClient yuCongMingClient;
+    @Resource
+    private XUNManager xunManager;
 
     /**
      * AI 对话
@@ -31,9 +33,13 @@ public class AiManager {
         devChatRequest.setModelId(modelId);
         devChatRequest.setMessage(message);
         BaseResponse<DevChatResponse> response = yuCongMingClient.doChat(devChatRequest);
+        System.out.println(response);
         if (response == null) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "AI 响应错误");
         }
+//        if(response.getData()==null && "鱼毛不足".equals(response.getMessage())){
+//            return xunManager.sendMesToAIUseXingHuo(XUNManager.PRECONDITION+message);
+//        }
         return response.getData().getContent();
     }
 }

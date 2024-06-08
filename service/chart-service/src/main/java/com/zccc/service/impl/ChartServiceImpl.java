@@ -15,7 +15,18 @@ import org.springframework.stereotype.Service;
 @DubboService
 public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
     implements ChartService{
+    public boolean updateById(Chart updateChartResult){
+        return super.updateById(updateChartResult);
+    }
 
+
+    public Long save_chart(Chart chart){
+        return super.save(chart) ? chart.getId() : -1;
+    }
+
+    public Chart getById(long chartId){
+        return super.getById(chartId);
+    }
 }
 
 
