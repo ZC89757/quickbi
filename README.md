@@ -1,7 +1,7 @@
 # AICanRead
 
 **项目网址**: [http://1.92.81.128](http://1.92.81.128)
-![输入图片说明](Nacos/QQ%E6%88%AA%E5%9B%BE20240610192334.png)
+![输入图片说明](Nacos/QQ%E6%88%AA%E5%9B%BE20240610200917.png)
 
 **后端开发**: [AICanRead GitHub 项目](https://gitee.com/jiwmn/aican-read)
 
