@@ -5,4 +5,4 @@ spring:
         server-addr: http://1.92.81.128:8848
       config:
         server-addr: http://1.92.81.128:8848
-        enabled: false
+        enabled: true

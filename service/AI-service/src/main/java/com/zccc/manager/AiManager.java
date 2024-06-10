@@ -40,6 +40,6 @@ public class AiManager {
 //        if(response.getData()==null && "鱼毛不足".equals(response.getMessage())){
 //            return xunManager.sendMesToAIUseXingHuo(XUNManager.PRECONDITION+message);
 //        }
-        return response.getData().getContent();
+        return response.getData().getContent().replace("'", "\"");
     }
 }

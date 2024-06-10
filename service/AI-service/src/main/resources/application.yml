@@ -59,8 +59,8 @@ mybatis-plus:
       logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
 yuapi:
   client:
-    access-key: yixw9o5lia9viw0axa78w5ypi4evk4nd
-    secret-key: h2dfo639ne8w0frrv3upvoweroa79ehu
+    access-key:
+    secret-key:
 dubbo:
   application:
     name: ${spring.application.name}
