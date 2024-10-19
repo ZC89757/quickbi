@@ -18,7 +18,6 @@ public class AIInitMain {
             String EXCHANGE_NAME =  AIMqConstant.BI_EXCHANGE_NAME;
             channel.exchangeDeclare(EXCHANGE_NAME, "direct");
 
-            // 创建队列，随机分配一个队列名称
             String queueName = AIMqConstant.BI_QUEUE_NAME;
             channel.queueDeclare(queueName, true, false, false, null);
             channel.queueBind(queueName, EXCHANGE_NAME,  AIMqConstant.BI_ROUTING_KEY);

@@ -1,16 +1,14 @@
 package com.zccc.bizmq;
 
 import com.rabbitmq.client.Channel;
-import com.zccc.service.ChartService;
-import com.zccc.common.BaseResponse;
 import com.zccc.common.ErrorCode;
 import com.zccc.constant.CommonConstant;
 import com.zccc.exception.BusinessException;
 import com.zccc.manager.AiManager;
-
+import com.zccc.model.entity.Chart;
+import com.zccc.service.ChartService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import com.zccc.model.entity.Chart;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -38,23 +36,20 @@ public class AIMessageConsumer {
     @RabbitListener(queues = {AIMqConstant.BI_QUEUE_NAME}, ackMode = "MANUAL")
     public void receiveMessage(String message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
         log.info("receiveMessage message = {}", message);
-//        channel.basicAck(deliveryTag, false);
+
         if (StringUtils.isBlank(message)) {
-            // 如果失败，消息拒绝
             channel.basicNack(deliveryTag, false, false);
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "消息为空");
         }
         long chartId = Long.parseLong(message);
-        //通过微服务调用获得
+
         Chart chart = chartService.getById(chartId);
         if (chart == null) {
             channel.basicNack(deliveryTag, false, false);
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "图表为空");
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "数据库中不存在待处理的图表");
         }
         // 先修改图表任务状态为 “执行中”。等执行成功后，修改为 “已完成”、保存执行结果；执行失败后，状态修改为 “失败”，记录任务失败信息。
-        Chart updateChart = new Chart();
-        updateChart.setId(chart.getId());
-        updateChart.setStatus("running");
+        Chart updateChart = Chart.builder().id(chart.getId()).status("running").build();
         boolean b = chartService.updateById(updateChart);
         if (!b) {
             channel.basicNack(deliveryTag, false, false);
@@ -63,21 +58,7 @@ public class AIMessageConsumer {
         }
         // 调用 AI
         String result = aiManager.doChat(CommonConstant.BI_MODEL_ID, buildUserInput(chart));
-        String[] splits = result.split("【【【【【");
-        if (splits.length < 3) {
-            channel.basicNack(deliveryTag, false, false);
-            handleChartUpdateError(chart.getId(), "AI 生成错误");
-            return;
-        }
-        String genChart = splits[1].trim();
-        String genResult = splits[2].trim();
-        Chart updateChartResult = new Chart();
-        updateChartResult.setId(chart.getId());
-        updateChartResult.setGenChart(genChart);
-        updateChartResult.setGenResult(genResult);
-        // todo 建议定义状态为枚举值
-        updateChartResult.setStatus("succeed");
-
+       Chart updateChartResult = aiMessageProcess(result, chart.getId());
         boolean updateResult = chartService.updateById(updateChartResult);
         if (!updateResult) {
             channel.basicNack(deliveryTag, false, false);
@@ -113,14 +94,21 @@ public class AIMessageConsumer {
     }
 
     private void handleChartUpdateError(long chartId, String execMessage) {
-        Chart updateChartResult = new Chart();
-        updateChartResult.setId(chartId);
-        updateChartResult.setStatus("failed");
-        updateChartResult.setExecMessage("execMessage");
+        Chart updateChartResult =Chart.builder().id(chartId).status("failed").execMessage(execMessage).build();
         boolean updateResult = chartService.updateById(updateChartResult);
         if (!updateResult) {
             log.error("更新图表失败状态失败" + chartId + "," + execMessage);
         }
     }
+
+    private Chart aiMessageProcess(String result, long chartId) {
+        String[] splits = result.split("【【【【【");
+        String genChart = splits[1].trim();
+        String genResult = splits[2].trim();
+        Chart updateChartResult =Chart.builder().id(chartId).genChart(genChart)
+                .genResult(genResult).status("succeed").build();
+        return updateChartResult;
+    }
+
 
 }

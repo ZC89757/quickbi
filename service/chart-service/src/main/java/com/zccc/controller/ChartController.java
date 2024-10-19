@@ -60,7 +60,7 @@ public class ChartController {
         if (chartAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Chart chart = new Chart();
+        Chart chart = Chart.builder().build();
         BeanUtils.copyProperties(chartAddRequest, chart);
         User loginUser = getLoginUser(request);
         chart.setUserId(loginUser.getId());
@@ -107,7 +107,7 @@ public class ChartController {
         if (chartUpdateRequest == null || chartUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Chart chart = new Chart();
+        Chart chart = Chart.builder().build();
         BeanUtils.copyProperties(chartUpdateRequest, chart);
         long id = chartUpdateRequest.getId();
         // 判断是否存在
@@ -208,7 +208,7 @@ public class ChartController {
         if (chartEditRequest == null || chartEditRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Chart chart = new Chart();
+        Chart chart = Chart.builder().build();
         BeanUtils.copyProperties(chartEditRequest, chart);
         User loginUser =getLoginUser(request);
         long id = chartEditRequest.getId();
@@ -225,16 +225,6 @@ public class ChartController {
 
 
 
-    private void handleChartUpdateError(long chartId, String execMessage) {
-        Chart updateChartResult = new Chart();
-        updateChartResult.setId(chartId);
-        updateChartResult.setStatus("failed");
-        updateChartResult.setExecMessage("execMessage");
-        boolean updateResult = chartService.updateById(updateChartResult);
-        if (!updateResult) {
-            log.error("更新图表失败状态失败" + chartId + "," + execMessage);
-        }
-    }
 
 
     /**

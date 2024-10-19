@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * 图表信息表
@@ -12,6 +15,8 @@ import lombok.Data;
  */
 @TableName(value ="chart")
 @Data
+@Builder
+@Accessors(chain = true)
 public class Chart implements Serializable {
     /**
      * id
