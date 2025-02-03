@@ -25,8 +25,8 @@ public class BigModelNew extends WebSocketListener {
     // 地址与鉴权信息  https://spark-api.xf-yun.com/v2.1/chat   2.0地址  domain参数为generalv2
     public static final String hostUrl = "https://spark-api.xf-yun.com/v3.5/chat";
     public static final String appid = "fad73e27";
-    public static final String apiSecret = "ZGI4YTkwZDI0YTM0MDI3ODNjODViMjQ1";
-    public static final String apiKey = "cbdd72bf93d133f532da336b5cfb9105";
+    public static final String apiSecret = "";
+    public static final String apiKey = "";
 
     public static List<RoleContent> historyList=new ArrayList<>(); // 对话历史存储集合
 
