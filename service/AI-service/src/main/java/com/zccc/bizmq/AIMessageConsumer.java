@@ -4,9 +4,10 @@ import com.rabbitmq.client.Channel;
 import com.zccc.common.ErrorCode;
 import com.zccc.constant.CommonConstant;
 import com.zccc.exception.BusinessException;
-import com.zccc.manager.AiManager;
+import com.zccc.manager.YCMChatService;
 import com.zccc.model.entity.Chart;
 import com.zccc.service.ChartService;
+import com.zccc.util.AiManager;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
+import static com.zccc.util.RemoveWordsWithSpaces.*;
+
 /**
  * 消息队列的消费者，控制aicontorller调用ai的频率
  */
@@ -25,10 +28,11 @@ import javax.annotation.Resource;
 @Slf4j
 public class AIMessageConsumer {
 
+
     @DubboReference
     private ChartService chartService;
 
-    @Resource
+    @Resource(name="tencent")
     private AiManager aiManager;
 
     // 指定程序监听的消息队列和确认机制
@@ -57,8 +61,21 @@ public class AIMessageConsumer {
             return;
         }
         // 调用 AI
-        String result = aiManager.doChat(CommonConstant.BI_MODEL_ID, buildUserInput(chart));
-       Chart updateChartResult = aiMessageProcess(result, chart.getId());
+        Chart updateChartResult=null;
+        String result = "";
+        try {
+            result = aiManager.doChat(CommonConstant.BI_MODEL_ID, buildUserInput(chart));
+            log.info("原始result = {}", result);
+            updateChartResult = aiMessageProcess(result, chart.getId());
+        }catch (Exception e){
+            //既然已经失败了就不用浪费空间了
+            e.printStackTrace();
+            log.error("api调用失败");
+            channel.basicAck(deliveryTag, false);
+            handleChartUpdateError(chart.getId(), "AI 生成错误");
+            return;
+        }
+
         boolean updateResult = chartService.updateById(updateChartResult);
         if (!updateResult) {
             channel.basicNack(deliveryTag, false, false);
@@ -85,7 +102,7 @@ public class AIMessageConsumer {
         // 拼接分析目标
         String userGoal = goal;
         if (StringUtils.isNotBlank(chartType)) {
-            userGoal += "，请使用" + chartType+"不要有单引号出现";
+            userGoal += "，请使用" + chartType;
         }
         userInput.append(userGoal).append("\n");
         userInput.append("原始数据：").append("\n");
@@ -102,13 +119,17 @@ public class AIMessageConsumer {
     }
 
     private Chart aiMessageProcess(String result, long chartId) {
+        result = replicer(result);
+        log.info("处理之后的结果-->{}",result);
         String[] splits = result.split("【【【【【");
-        String genChart = splits[1].trim();
-        String genResult = splits[2].trim();
-        Chart updateChartResult =Chart.builder().id(chartId).genChart(genChart)
+        String genChart = removeWordsWithSpaces(splits[1].trim());
+        String genResult = splits[2].trim().replace("{", "").replace("}", "");
+        return Chart.builder().id(chartId).genChart(genChart)
                 .genResult(genResult).status("succeed").build();
-        return updateChartResult;
     }
+
+
+
 
 
 }

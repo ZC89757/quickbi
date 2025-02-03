@@ -7,17 +7,17 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="AI-service" />
-        <module name="common" />
-        <module name="Gateway" />
         <module name="user-service" />
         <module name="chart-service" />
-        <module name="Nacos" />
+        <module name="common" />
+        <module name="Gateway" />
         <module name="dubbo-api" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="8">
       <module name="dubbo-api" target="22" />
       <module name="eureka02" target="8" />
+      <module name="Nacos" target="8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

@@ -1,7 +1,19 @@
 package com.zccc.controller;
 
 import cn.hutool.core.io.FileUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.tencentcloudapi.common.Credential;
+import com.tencentcloudapi.common.SSEResponseModel;
+import com.tencentcloudapi.common.exception.TencentCloudSDKException;
+import com.tencentcloudapi.common.profile.ClientProfile;
+import com.tencentcloudapi.common.profile.HttpProfile;
+import com.tencentcloudapi.hunyuan.v20230901.HunyuanClient;
+import com.tencentcloudapi.hunyuan.v20230901.models.ChatCompletionsRequest;
+import com.tencentcloudapi.hunyuan.v20230901.models.ChatCompletionsResponse;
+import com.tencentcloudapi.hunyuan.v20230901.models.Choice;
+import com.tencentcloudapi.hunyuan.v20230901.models.Message;
 import com.zccc.bizmq.AIMessageProducer;
+import com.zccc.common.ChatStdResponse;
 import com.zccc.model.dto.chart.GenChartByAiRequest;
 import com.zccc.service.ChartService;
 import com.zccc.exception.BusinessException;
@@ -19,11 +31,18 @@ import com.zccc.model.entity.User;
 import com.zccc.model.vo.BiResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.Executor;
 
 import static com.zccc.common.Constants.ONE_MB;
 import static com.zccc.common.Constants.validFileSuffixList;
@@ -132,6 +151,108 @@ public class AIController {
             log.error("更新图表失败状态失败" + chartId + "," + "保存图表失败");
         }
     }
+
+//    @GetMapping("/stream")
+//    public String streamRes(String wd, HttpServletResponse response) throws IOException {
+//        ServletOutputStream outputStream = response.getOutputStream();
+//        try {
+//            //核心设置数据流格式响应头
+//            response.setContentType("text/event-stream");
+//            response.setCharacterEncoding("UTF-8");
+//            HttpProfile httpProfile = new HttpProfile();
+//            httpProfile.setEndpoint("hunyuan.tencentcloudapi.com");
+//            // 实例化一个client选项，可选的，没有特殊需求可以跳过
+//            ClientProfile clientProfile = new ClientProfile();
+//            clientProfile.setHttpProfile(httpProfile);
+//            Credential cred = new Credential("AKID9CMK5va3LZhfTBqLfoldNwLagbLvLcjm", "y9bGrRuNp9JLDvT8nJg1JTUUiqqofP0Y");
+//            HunyuanClient client = new HunyuanClient(cred, "", clientProfile);
+//            ChatCompletionsRequest req = new ChatCompletionsRequest();
+//            Message msg = new Message();
+//            req.setModel("hunyuan-lite");
+//            msg.setRole("user");
+//            msg.setContent(wd);
+//            req.setMessages(new Message[]{msg});
+//            req.setStream(true);
+//            ChatCompletionsResponse resp = client.ChatCompletions(req);
+//            System.out.println(resp);
+//            if (req.getStream()) {
+//                for (SSEResponseModel.SSE e : resp) {
+//                    ChatStdResponse eventModel = JSONObject.toJavaObject(JSONObject.parseObject(e.Data), ChatStdResponse.class);
+//                    List<Choice> choices = eventModel.getChoices();
+//                    if (choices.size() > 0) {
+//                        String res = choices.get(0).getDelta().getContent();
+//                        outputStream.write(res.getBytes());
+//                        outputStream.flush();
+//                    }
+//                    // 如果希望在任意时刻中止事件流, 使用 resp.close() + break
+//                    boolean iWantToCancelNow = false;
+//                    if (iWantToCancelNow) {
+//                        outputStream.close();
+//                        resp.close();
+//                        break;
+//                    }
+//                }
+//            }
+//        } catch (TencentCloudSDKException e) {
+//            e.printStackTrace();
+//        }
+//        return "";
+//    }
+    @GetMapping("/stream")
+    public void streamRes(String wd, HttpServletResponse response) throws IOException {
+        response.setContentType("text/event-stream");
+        response.setCharacterEncoding("UTF-8");
+        ServletOutputStream outputStream = response.getOutputStream();
+
+        try {
+            HttpProfile httpProfile = new HttpProfile();
+            httpProfile.setEndpoint("hunyuan.tencentcloudapi.com");
+
+            ClientProfile clientProfile = new ClientProfile();
+            clientProfile.setHttpProfile(httpProfile);
+
+            Credential cred = new Credential("AKID9CMK5va3LZhfTBqLfoldNwLagbLvLcjm", "y9bGrRuNp9JLDvT8nJg1JTUUiqqofP0Y");
+            HunyuanClient client = new HunyuanClient(cred, "", clientProfile);
+
+            ChatCompletionsRequest req = new ChatCompletionsRequest();
+            Message msg = new Message();
+            req.setModel("hunyuan-lite");
+            msg.setRole("user");
+            msg.setContent(wd);
+            req.setMessages(new Message[]{msg});
+            req.setStream(true);
+
+            ChatCompletionsResponse resp = client.ChatCompletions(req);
+
+            if (req.getStream()) {
+                for (SSEResponseModel.SSE e : resp) {
+                    ChatStdResponse eventModel = JSONObject.toJavaObject(JSONObject.parseObject(e.Data), ChatStdResponse.class);
+                    List<Choice> choices = eventModel.getChoices();
+
+                    if (!choices.isEmpty()) {
+                        String res = choices.get(0).getDelta().getContent();
+                        String formattedResponse = "data: " + res + "\n\n";
+//                        String formattedResponse = "data: " + res + "\n\n";
+                        outputStream.write(formattedResponse.getBytes("UTF-8"));
+                        outputStream.flush();
+                    }
+
+                    // 如果需要取消
+                    boolean iWantToCancelNow = false;
+                    if (iWantToCancelNow) {
+                        outputStream.close();
+                        resp.close();
+                        break;
+                    }
+                }
+            }
+        } catch (TencentCloudSDKException e) {
+            e.printStackTrace();
+        } finally {
+            outputStream.close(); // 确保输出流关闭
+        }
+    }
+
 
 
 }

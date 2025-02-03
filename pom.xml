@@ -15,7 +15,6 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <modules>
-        <module>Nacos</module>
         <module>service</module>
         <module>Gateway</module>
     </modules>

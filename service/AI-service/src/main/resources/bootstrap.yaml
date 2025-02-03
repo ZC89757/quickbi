@@ -3,8 +3,6 @@ spring:
     nacos:
       discovery:
         server-addr: http://1.92.81.128:8848
-        ip: 1.92.81.128
       config:
         server-addr: http://1.92.81.128:8848
-
         enabled: false

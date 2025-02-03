@@ -16,6 +16,28 @@
         <java.version>1.8</java.version>
     </properties>
     <dependencies>
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--            <artifactId>jackson-databind</artifactId>-->
+<!--&lt;!&ndash;            <version>2.13.3</version>&ndash;&gt;-->
+<!--        </dependency>-->
+
+
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java-hunyuan</artifactId>
+            <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java-common</artifactId>
+            <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java-cvm</artifactId>
+            <version>LATEST</version>
+        </dependency>
         <dependency>
             <groupId>io.github.briqt</groupId>
             <artifactId>xunfei-spark4j</artifactId>
