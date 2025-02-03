@@ -152,52 +152,7 @@ public class AIController {
         }
     }
 
-//    @GetMapping("/stream")
-//    public String streamRes(String wd, HttpServletResponse response) throws IOException {
-//        ServletOutputStream outputStream = response.getOutputStream();
-//        try {
-//            //核心设置数据流格式响应头
-//            response.setContentType("text/event-stream");
-//            response.setCharacterEncoding("UTF-8");
-//            HttpProfile httpProfile = new HttpProfile();
-//            httpProfile.setEndpoint("hunyuan.tencentcloudapi.com");
-//            // 实例化一个client选项，可选的，没有特殊需求可以跳过
-//            ClientProfile clientProfile = new ClientProfile();
-//            clientProfile.setHttpProfile(httpProfile);
-//            Credential cred = new Credential("AKID9CMK5va3LZhfTBqLfoldNwLagbLvLcjm", "y9bGrRuNp9JLDvT8nJg1JTUUiqqofP0Y");
-//            HunyuanClient client = new HunyuanClient(cred, "", clientProfile);
-//            ChatCompletionsRequest req = new ChatCompletionsRequest();
-//            Message msg = new Message();
-//            req.setModel("hunyuan-lite");
-//            msg.setRole("user");
-//            msg.setContent(wd);
-//            req.setMessages(new Message[]{msg});
-//            req.setStream(true);
-//            ChatCompletionsResponse resp = client.ChatCompletions(req);
-//            System.out.println(resp);
-//            if (req.getStream()) {
-//                for (SSEResponseModel.SSE e : resp) {
-//                    ChatStdResponse eventModel = JSONObject.toJavaObject(JSONObject.parseObject(e.Data), ChatStdResponse.class);
-//                    List<Choice> choices = eventModel.getChoices();
-//                    if (choices.size() > 0) {
-//                        String res = choices.get(0).getDelta().getContent();
-//                        outputStream.write(res.getBytes());
-//                        outputStream.flush();
-//                    }
-//                    // 如果希望在任意时刻中止事件流, 使用 resp.close() + break
-//                    boolean iWantToCancelNow = false;
-//                    if (iWantToCancelNow) {
-//                        outputStream.close();
-//                        resp.close();
-//                        break;
-//                    }
-//                }
-//            }
-//        } catch (TencentCloudSDKException e) {
-//            e.printStackTrace();
-//        }
-//        return "";
-//    }
+
     @GetMapping("/stream")
     public void streamRes(String wd, HttpServletResponse response) throws IOException {
         response.setContentType("text/event-stream");
@@ -211,7 +166,7 @@ public class AIController {
             ClientProfile clientProfile = new ClientProfile();
             clientProfile.setHttpProfile(httpProfile);
 
-            Credential cred = new Credential("AKID9CMK5va3LZhfTBqLfoldNwLagbLvLcjm", "y9bGrRuNp9JLDvT8nJg1JTUUiqqofP0Y");
+            Credential cred = new Credential("", "");
             HunyuanClient client = new HunyuanClient(cred, "", clientProfile);
 
             ChatCompletionsRequest req = new ChatCompletionsRequest();
